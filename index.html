@@ -1,90 +1,488 @@
-<html>
+<!DOCTYPE html>
+<html lang="ru">
 <head>
-  <meta name="viewport" content="width=device-width">
-  <title>Лицевая Книга - отечественная социальная сеть</title>
-  <style>
-body,
-html {
- font-family: Arial, Impact;
-}
-h1 {
-font-family: Impact;
-color: Red;
-}
-	
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лицевая Книга</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f2f5f9;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem;
+            color: #1e293b;
+        }
+
+        .forum {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.15);
+            padding: 2rem 2rem 2.5rem;
+            transition: all 0.2s;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+            color: #0f172a;
+            letter-spacing: -0.02em;
+        }
+
+        h1 span {
+            background: #e9eef4;
+            font-size: 1.2rem;
+            padding: 0.2rem 0.9rem;
+            border-radius: 40px;
+            font-weight: 500;
+            color: #1e3a5f;
+        }
+
+        .subhead {
+            color: #64748b;
+            margin-bottom: 2rem;
+            border-left: 4px solid #94a3b8;
+            padding-left: 1rem;
+            font-size: 1rem;
+        }
+
+        /* форма нового сообщения */
+        .new-post {
+            background: #f8fafc;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2.5rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+        }
+
+        .new-post h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #1e293b;
+        }
+
+        .new-post h2::before {
+            content: "✏️";
+            font-size: 1.3rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .input-group input,
+        .input-group textarea {
+            font-family: inherit;
+            border: 1px solid #cbd5e1;
+            border-radius: 1rem;
+            padding: 0.9rem 1.2rem;
+            font-size: 0.95rem;
+            background: white;
+            transition: 0.2s;
+            outline: none;
+            resize: vertical;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        }
+
+        .input-group textarea {
+            min-height: 100px;
+        }
+
+        .btn-primary {
+            background: #0f172a;
+            color: white;
+            border: none;
+            border-radius: 2rem;
+            padding: 0.9rem 2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: 0.15s;
+            align-self: flex-start;
+            box-shadow: 0 8px 18px -6px rgba(15, 23, 42, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: #1e293b;
+            transform: scale(1.01);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.99);
+        }
+
+        /* лента сообщений */
+        .feed {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .post {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.5rem 1.75rem;
+            border: 1px solid #e9eef4;
+            transition: 0.15s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            animation: fadeIn 0.25s ease;
+        }
+
+        .post:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 12px 24px -12px rgba(0, 0, 0, 0.12);
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .post-author {
+            font-weight: 600;
+            color: #0f172a;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .post-author::before {
+            content: "👤";
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .post-time {
+            font-size: 0.8rem;
+            background: #f1f5f9;
+            padding: 0.25rem 0.8rem;
+            border-radius: 20px;
+            color: #475569;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+        }
+
+        .post-content {
+            line-height: 1.6;
+            color: #1e293b;
+            word-break: break-word;
+            font-size: 1rem;
+            padding-left: 0.2rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            background: #f8fafc;
+            border-radius: 2rem;
+            color: #64748b;
+            border: 2px dashed #cbd5e1;
+            font-size: 1rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* счётчик и нижняя панель */
+        .forum-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .post-count {
+            background: #eef2f6;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 600px) {
+            .forum {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 1.6rem;
+            }
+            .post {
+                padding: 1.2rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h1>Лицевая Книга</h1>
-  <div id="forum-container"></div>
+    <div class="forum">
+        <h1>
+        Лицевая <span>Книга</span>
+        </h1>
+        <div class="subhead">
+            Делитесь мыслями, задавайте вопросы, отвечайте другим.
+        </div>
 
-  <hr>
-  <h4>Новое сообщение</h4>
-  <form id="add-reply-form">
-    <p>Автор: <input type="text" name="author" required size="15"></p>
-    <p>Текст:<br><textarea name="text" rows="3" cols="30" required></textarea></p>
-    <p><button type="submit">Отправить!</button></p>
-  </form>
+        <!-- Форма нового сообщения -->
+        <div class="new-post">
+            <h2>Новое сообщение</h2>
+            <form id="postForm">
+                <div class="input-group">
+                    <input type="text" id="authorInput" placeholder="Ваше имя" maxlength="40" required>
+                    <textarea id="messageInput" placeholder="Напишите сообщение..." maxlength="1000" required></textarea>
+                </div>
+                <button type="submit" class="btn-primary">
+                    ➤ Отправить
+                </button>
+            </form>
+        </div>
 
-  <script>
-    const FORUM_FILE = 'forum.json';
+        <!-- Лента сообщений -->
+        <div id="feed" class="feed">
+            <!-- начальные сообщения добавятся через JS -->
+        </div>
 
-    async function loadForum() {
-      try {
-        const r = await fetch(FORUM_FILE);
-        if (!r.ok) throw new Error('JSON not found');
-        const data = await r.json();
-        render(data);
-      } catch (e) {
-        document.getElementById('forum-container').innerHTML = '<p>Не удалось загрузить форум.</p>';
-      }
-    }
+        <div class="forum-footer">
+            <span>📌 Всего сообщений: <span id="totalCount">0</span></span>
+            <span class="post-count">живая лента</span>
+        </div>
+    </div>
 
-    function render(data) {
-      const out = document.getElementById('forum-container');
-      let html = '';
-      if (!data.topics || data.topics.length === 0) {
-        html = '<p>Пока нет тем.</p>';
-      } else {
-        data.topics.forEach(t => {
-          html += `<div style="margin-bottom:1em;">
-            <b>${escapeHtml(t.title)}</b> <small>(${t.author}, ${t.date})</small><br>
-            ${escapeHtml(t.text || '')}<br><br>`;
-          if (t.replies && t.replies.length > 0) {
-            html += '<div style="margin-left:1em; font-size:0.9em;">';
-            t.replies.forEach(r => {
-              html += `• ${escapeHtml(r.author)} (${r.date}): ${escapeHtml(r.text)}<br>`;
+    <script>
+        (function() {
+            // ---- Данные ----
+            // Начальные сообщения, чтобы форум не был пустым
+            let posts = [
+                {
+                    id: '1',
+                    author: 'Тимофей',
+                    content: 'Всем привет! Это стартовое сообщение. Как вам новый форум?',
+                    timestamp: new Date(Date.now() - 35 * 60 * 1000).toISOString() // 35 минут назад
+                },
+                {
+                    id: '2',
+                    author: 'Мария',
+                    content: 'Отличная идея! Удобно, что можно писать прямо здесь. Кто-нибудь знает, будет ли тёмная тема?',
+                    timestamp: new Date(Date.now() - 12 * 60 * 1000).toISOString() // 12 минут назад
+                }
+            ];
+
+            // ---- DOM-элементы ----
+            const feedEl = document.getElementById('feed');
+            const postForm = document.getElementById('postForm');
+            const authorInput = document.getElementById('authorInput');
+            const messageInput = document.getElementById('messageInput');
+            const totalCountSpan = document.getElementById('totalCount');
+
+            // ---- Вспомогательные функции ----
+
+            // Форматирование времени: "только что", "5 мин назад" и т.п.
+            function formatTime(isoString) {
+                const date = new Date(isoString);
+                const now = new Date();
+                const diffMs = now - date;
+                const diffSec = Math.floor(diffMs / 1000);
+                const diffMin = Math.floor(diffSec / 60);
+                const diffHour = Math.floor(diffMin / 60);
+
+                if (diffSec < 45) return 'только что';
+                if (diffSec < 90) return 'минуту назад';
+                if (diffMin < 60) {
+                    if (diffMin === 1) return '1 минуту назад';
+                    if (diffMin < 5) return `${diffMin} минуты назад`;
+                    return `${diffMin} минут назад`;
+                }
+                if (diffHour < 24) {
+                    if (diffHour === 1) return '1 час назад';
+                    if (diffHour < 5) return `${diffHour} часа назад`;
+                    return `${diffHour} часов назад`;
+                }
+                // если больше суток — показываем дату
+                return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+            }
+
+            // Экранирование HTML (чтобы избежать XSS)
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // Обновление счетчика в футере
+            function updateTotalCount() {
+                totalCountSpan.textContent = posts.length;
+            }
+
+            // ---- Отрисовка ленты ----
+            function renderFeed() {
+                if (!feedEl) return;
+
+                if (posts.length === 0) {
+                    feedEl.innerHTML = `<div class="empty-state">Пока нет сообщений. Будьте первым!</div>`;
+                    updateTotalCount();
+                    return;
+                }
+
+                // Сортируем по убыванию даты (сначала новые)
+                const sorted = [...posts].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                let html = '';
+                for (let post of sorted) {
+                    const safeAuthor = escapeHtml(post.author);
+                    const safeContent = escapeHtml(post.content);
+                    const timeAgo = formatTime(post.timestamp);
+
+                    html += `
+                        <div class="post" data-id="${post.id}">
+                            <div class="post-header">
+                                <span class="post-author">${safeAuthor}</span>
+                                <span class="post-time">${timeAgo}</span>
+                            </div>
+                            <div class="post-content">${safeContent}</div>
+                        </div>
+                    `;
+                }
+
+                feedEl.innerHTML = html;
+                updateTotalCount();
+            }
+
+            // ---- Добавление нового сообщения ----
+            function addPost(author, content) {
+                // Генерируем простой уникальный ID
+                const id = Date.now() + '-' + Math.random().toString(36).substring(2, 8);
+                const newPost = {
+                    id: id,
+                    author: author.trim(),
+                    content: content.trim(),
+                    timestamp: new Date().toISOString()
+                };
+                posts.push(newPost);
+                renderFeed(); // перерисовываем всю ленту (сортировка сама разрулит)
+            }
+
+            // ---- Обработчик отправки формы ----
+            postForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const author = authorInput.value.trim();
+                const message = messageInput.value.trim();
+
+                if (!author || !message) {
+                    alert('Пожалуйста, заполните имя и сообщение.');
+                    return;
+                }
+
+                // Ограничения длины (дублируем maxlength, но на всякий случай)
+                if (author.length > 40) {
+                    alert('Имя не должно превышать 40 символов.');
+                    return;
+                }
+                if (message.length > 1000) {
+                    alert('Сообщение не должно превышать 1000 символов.');
+                    return;
+                }
+
+                addPost(author, message);
+
+                // Очищаем поле сообщения, имя оставляем (удобно для нескольких ответов)
+                messageInput.value = '';
+                // Фокус на поле сообщения для быстрого ввода
+                messageInput.focus();
+
+                // Если имя было пустым — не очищаем, но оно не пустое по условию
             });
-            html += '</div>';
-          }
-          html += '</div>';
-        });
-      }
-      out.innerHTML = html;
-    }
 
-    // Простая защита от XSS
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
+            // ---- Инициализация ----
+            function init() {
+                // Если нужно, можно загрузить посты из localStorage, но для простоты
+                // оставляем стартовые + возможность добавлять. 
+                // (при желании можно раскомментировать сохранение)
+                renderFeed();
 
-    document.getElementById('add-reply-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const form = e.target;
-      const author = form.elements.author.value.trim();
-      const text = form.elements.text.value.trim();
+                // Дополнительно: обновляем время в постах каждые 30 секунд (не обязательно, но приятно)
+                // Но чтобы не перегружать — можно раз в минуту, но мы просто перерисовываем раз в 45 сек.
+                // Однако перерисовка сбросит фокус, если пользователь печатает? Нет, форма отдельно, лента обновляется.
+                setInterval(() => {
+                    // Перерисовываем ленту только если нет активного ввода в textarea/input?
+                    // На самом деле перерисовка ленты не влияет на поля ввода, так что можно.
+                    // Но чтобы не дёргать DOM лишний раз, будем обновлять только если документ видим.
+                    if (document.visibilityState === 'visible') {
+                        renderFeed();
+                    }
+                }, 45000); // раз в 45 секунд
+            }
 
-      // Здесь будет логика отправки: GitHub API, вебхук, или просто заглушка
-      alert('Ваше сообщение отправлено на модерацию, подождите немного. Спасибо!');
-      // Чтобы реально добавить сообщение, нужно писать в JSON через сервер/GitHub Actions.
-    });
+            init();
 
-    loadForum();
-  </script>
+            // (Опционально) Сохранение в localStorage — если захотите, раскомментируйте блок ниже
+            // Но тогда нужно синхронизировать с начальными постами. Оставим для простоты без сохранения.
+            /*
+            // Загружаем сохранённые посты, если есть
+            const saved = localStorage.getItem('forumPosts');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed) && parsed.length) {
+                        posts = parsed;
+                    }
+                } catch (e) {}
+            }
+            // Сохраняем при каждом изменении
+            const originalAddPost = addPost;
+            addPost = function(author, content) {
+                originalAddPost(author, content);
+                localStorage.setItem('forumPosts', JSON.stringify(posts));
+            };
+            // Также перезапишем renderFeed? Нет, всё ок.
+            // Но нужно переопределить и renderFeed? Нет.
+            // Однако init вызовется до этого, и посты загрузятся, но addPost уже переопределён.
+            // Всё будет работать, если аккуратно.
+            */
+        })();
+    </script>
 </body>
 </html>
