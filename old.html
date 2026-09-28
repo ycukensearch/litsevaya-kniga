@@ -1,0 +1,90 @@
+<html>
+<head>
+  <meta name="viewport" content="width=device-width">
+  <title>Лицевая Книга - отечественная социальная сеть</title>
+  <style>
+body,
+html {
+ font-family: Arial, Impact;
+}
+h1 {
+font-family: Impact;
+color: Red;
+}
+	
+</style>
+</head>
+<body>
+  <h1>Лицевая Книга</h1>
+  <div id="forum-container"></div>
+
+  <hr>
+  <h4>Новое сообщение</h4>
+  <form id="add-reply-form">
+    <p>Автор: <input type="text" name="author" required size="15"></p>
+    <p>Текст:<br><textarea name="text" rows="3" cols="30" required></textarea></p>
+    <p><button type="submit">Отправить!</button></p>
+  </form>
+
+  <script>
+    const FORUM_FILE = 'forum.json';
+
+    async function loadForum() {
+      try {
+        const r = await fetch(FORUM_FILE);
+        if (!r.ok) throw new Error('JSON not found');
+        const data = await r.json();
+        render(data);
+      } catch (e) {
+        document.getElementById('forum-container').innerHTML = '<p>Не удалось загрузить форум.</p>';
+      }
+    }
+
+    function render(data) {
+      const out = document.getElementById('forum-container');
+      let html = '';
+      if (!data.topics || data.topics.length === 0) {
+        html = '<p>Пока нет тем.</p>';
+      } else {
+        data.topics.forEach(t => {
+          html += `<div style="margin-bottom:1em;">
+            <b>${escapeHtml(t.title)}</b> <small>(${t.author}, ${t.date})</small><br>
+            ${escapeHtml(t.text || '')}<br><br>`;
+          if (t.replies && t.replies.length > 0) {
+            html += '<div style="margin-left:1em; font-size:0.9em;">';
+            t.replies.forEach(r => {
+              html += `• ${escapeHtml(r.author)} (${r.date}): ${escapeHtml(r.text)}<br>`;
+            });
+            html += '</div>';
+          }
+          html += '</div>';
+        });
+      }
+      out.innerHTML = html;
+    }
+
+    // Простая защита от XSS
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    document.getElementById('add-reply-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const author = form.elements.author.value.trim();
+      const text = form.elements.text.value.trim();
+
+      // Здесь будет логика отправки: GitHub API, вебхук, или просто заглушка
+      alert('Ваше сообщение отправлено на модерацию, подождите немного. Спасибо!');
+      // Чтобы реально добавить сообщение, нужно писать в JSON через сервер/GitHub Actions.
+    });
+
+    loadForum();
+  </script>
+</body>
+</html>
